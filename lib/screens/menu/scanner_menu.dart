@@ -36,20 +36,25 @@ class _ScanQRcodeState extends State<ScanQRcode> {
           table = {};
         });
       }
-      if (table['_type_order'] == "Non Ajouter") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BienVenue(idTable),
-          ),
-        );
+      if ( table['_id'] == idTable ) {
+        if (table['_type_order'] == "Non Ajouter") {
+          print('heloooooooooooo');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BienVenue(idTable),
+            ),
+          );
+          print('heloooooooooooo');
+        } else {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Order(idTable)),
+                (Route<dynamic> route) => false,
+          );
+        }
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Order(idTable),
-          ),
-        );
+        print('ffffffffffffffffffff');
       }
     });
   }

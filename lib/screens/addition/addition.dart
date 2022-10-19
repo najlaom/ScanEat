@@ -40,6 +40,10 @@ class _AdditionState extends State<Addition> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.orange.shade50,
+        elevation: 0,
+      ),
       body: Container(
         color: Colors.orange.shade50,
         alignment: Alignment.center,
@@ -50,7 +54,7 @@ class _AdditionState extends State<Addition> {
             mainAxisSize: MainAxisSize.min,
             children: [
               table!= null && table['order']!= null?Container(
-                width: 450,
+                width: 650,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -171,8 +175,9 @@ class _AdditionState extends State<Addition> {
                     Divider(),
                     Container(
                       padding: EdgeInsets.all(10.0),
-                      height: 100,
+                      height: (table['order']['tableItems'].length >3)?250: 100,
                       child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
                           itemCount:
                           table['order']['tableItems'].length,
                           itemBuilder:
@@ -221,6 +226,7 @@ class _AdditionState extends State<Addition> {
                     Container(
                       padding: EdgeInsets.all(5.0),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment:
@@ -229,7 +235,7 @@ class _AdditionState extends State<Addition> {
                             children: [
                               Text(
                                   'total'.toUpperCase() +
-                                      " DNT",
+                                      " DNT :",
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 20.0)),
@@ -243,6 +249,17 @@ class _AdditionState extends State<Addition> {
                           SizedBox(
                             height: 10.0,
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Offre :', style: TextStyle(
+                                  color: Colors.black,
+                                  height: 1.5,
+                                  fontSize: 20.0)),
+                              Text('10%'),
+                              Text('DNT')
+                            ],
+                          )
                         ],
                       ),
                     ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scaneat/res/colors.dart';
-import 'package:scaneat/utils/helper.dart';
+
 
 class SearchBar extends StatelessWidget {
   String title;

@@ -57,9 +57,11 @@ class _AddToTableState extends State<AddToTable> {
 
   calculTotal() {
     double tmp = 0;
-    bloc.allItems.forEach((prdt) {
-      tmp += prdt["quantity"] * prdt["price"];
-    });
+    if (bloc.allItems != null) {
+      bloc.allItems.forEach((prdt) {
+        tmp += prdt["quantity"] * prdt["price"];
+      });
+    }
     setState(() {
       total = tmp;
     });
@@ -67,11 +69,12 @@ class _AddToTableState extends State<AddToTable> {
 
   getStringArray(array) {
     List _isSelected = [];
-    for(var i = 0; i < array.length; i++) {
+    for (var i = 0; i < array.length; i++) {
       _isSelected.add(array[i]["name"]);
     }
     return _isSelected;
   }
+
   _addToTable() async {
     List items = [];
     print("bloc.allItems : ");
@@ -79,11 +82,11 @@ class _AddToTableState extends State<AddToTable> {
     List _isSelected = [];
 
     for (var i = 0; i < bloc.allItems.length; i++) {
-     print('fgggggggghhhhhhhh');
-     print(bloc.allItems[i]['selectChoice']);
-     _isSelected = getStringArray(bloc.allItems[i]['selectChoice']);
-     print('_isSelected');
-     print(_isSelected);
+      print('fgggggggghhhhhhhh');
+      print(bloc.allItems[i]['selectChoice']);
+      _isSelected = getStringArray(bloc.allItems[i]['selectChoice']);
+      print('_isSelected');
+      print(_isSelected);
     }
     print('items : ');
     print(items.toString());
@@ -97,13 +100,15 @@ class _AddToTableState extends State<AddToTable> {
       print('ioeeeeeeeeeeeeetems');
       print(items);
     });
-    var prdClient = await TableService().addtoTable(items, total.toString(), id_gerant);
+    var prdClient =
+        await TableService().addtoTable(items, total.toString(), id_gerant);
     print('fffffffffffffffff');
     print(items);
     print("idProdddddddddddddddt");
     print(prdClient);
     print(prdClient.toString());
   }
+
   _checkScannerTable() async {
     var tableDetails = await TableService().getTableInfos();
     print("tableDetailsssss");
@@ -149,62 +154,88 @@ class _AddToTableState extends State<AddToTable> {
       ),
       extendBody: true,
       extendBodyBehindAppBar: true,
-      body: Stack(
+      body: Column(
         children: [
-          ListView(
-            children: [
-              ...tableContent
-                  .map((e) => Column(
-                        children: [
-                          _buildProduct(e),
-                        ],
-                      ))
-                  .toList(),
-              _buildDivider(),
-              const SizedBox(height: 20.0),
-              Row(
+          Container(
+            height: MediaQuery.of(context).size.height * 0.86,
+            child: ListView(
+              children: [
+                ...tableContent
+                    .map((e) => Column(
+                          children: [
+                            _buildProduct(e),
+                          ],
+                        ))
+                    .toList(),
+              ],
+            ),
+          ),
+          Card(
+            elevation: 4.0,
+            child: Container(
+              height: 110.0,
+              color: Colors.white,
+              //padding: EdgeInsets.all(1.0),
+              child: Column(
                 children: [
-                  const SizedBox(width: 40.0),
-                  Text(
-                    "Total",
-                    style: priceTextStyle.copyWith(color: Colors.black),
-                  ),
-                  Spacer(),
-                  Text(
-                    "$total" + "" + "TND",
-                    style: priceTextStyle.copyWith(color: Colors.indigo),
-                  ),
-                  const SizedBox(width: 20.0),
-                ],
-              ),
-              const SizedBox(height: 10.0),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 8.0),
-                child: RaisedButton(
-                  padding: const EdgeInsets.all(16.0),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0)),
-                  color: Color(0xFF082032),
-                  child: Text(
-                    "valider".toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 18.0,
+                  _buildDivider(),
+                  Container(
+                    padding: EdgeInsets.all(5.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Total",
+                          style: TextStyle(
+                              color: Color(0xFF082032),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              height: 1.5,
+                              fontFamily: 'JosefinSans'),
+                        ),
+                        Spacer(),
+                        Text(
+                          "$total" + "" + " TND",
+                          style: TextStyle(
+                              color: Color(0xFF082032),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              height: 1.5,
+                              fontFamily: 'JosefinSans'),
+                        ),
+                      ],
                     ),
                   ),
-                  onPressed: () async {
-                    await _addToTable();
-                    bloc.emptyCart();
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (BuildContext context) => Order(id_Table,)),
+                  Container(
+                    width: 350,
+                    child: RaisedButton(
+                      padding: const EdgeInsets.all(10.0),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0)),
+                      color: Color(0xFF00C092),
+                      child: Text(
+                        "Valider",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            fontSize: 24.0,
+                            height: 1.5),
+                      ),
+                      onPressed: () async {
+                        await _addToTable();
+                        bloc.emptyCart();
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => Order(
+                                      id_Table,
+                                    )),
                             (Route<dynamic> route) => false);
-                  },
-                ),
+                      },
+                    ),
+                  )
+                ],
               ),
-            ],
+            ),
           ),
         ],
       ),
@@ -226,117 +257,119 @@ class _AddToTableState extends State<AddToTable> {
     return Card(
       elevation: 1.0,
       child: Container(
-        height: 90,
+        height: 100,
+        width: MediaQuery.of(context).size.width,
         child: ListTile(
-            leading: Container(
-              width: 110,
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      bloc.deletItem(product);
-                      setState(() {
-                        calculTotal();
-                        tableContent = bloc.allItems;
-                      });
-                    },
-                    child: Icon(Icons.close,color: Colors.black),
-                  ),
-                  Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      color: Colors.deepOrange,
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: product['productPicture'] != null
-                        ? Image.network(
-                      baseurl + "public/products/" + product["productPicture"],
-                      fit: BoxFit.cover,
-                      height: 80,
-                      width: 80,
-                    )
-                        : null,
-                  ),
-                ],
+          visualDensity: VisualDensity(horizontal: -4, vertical: 0),
+          contentPadding: EdgeInsets.only(left: 5.0, right: 0.0),
+          title: Row(
+            children: [
+              Text(
+                product['name'] != null ? product['name'] : "",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              Spacer(),
+              Text(
+                "${product['price'] * product['quantity']}" + ' ' + "TD",
+                style: priceTextStyle,
+              ),
+            ],
+          ),
+          subtitle: Container(
+            height: 70,
+            child: Column(
+              children: [
+                Expanded(
+                    child: ListView.builder(
+                        padding: EdgeInsets.only(top: 5.0),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: product['selectChoice'].length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Text(product['selectChoice'][index]['name']+ ', ');
+                        })),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color(0xFF00C092),
+                          shape: const CircleBorder(),
+                          // padding: const EdgeInsets.all(30)
+                          minimumSize: Size(5, 5)
+                      ),
+                      child: const Icon(
+                        Icons.remove,
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        bloc.removeFromProduct(product);
+                        setState(() {
+                          calculTotal();
+                          tableContent = bloc.allItems;
+                        });
+                      },
+                    ),
+                    Text(
+                      "${product['quantity']}",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color(0xFF00C092),
+                          shape: const CircleBorder(),
+                          // padding: const EdgeInsets.all(30)
+                          minimumSize: Size(5, 5)
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        bloc.addOneItem(product);
+                        setState(() {
+                          calculTotal();
+                          tableContent = bloc.allItems;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-            title: Container(
-              height: 80,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        product['name'],
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "${product['price'] * product['quantity']}" + ' ' + "TD",
-                        style: priceTextStyle,
-                      ),
-                    ],
-                  ),
-                  Expanded(child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: product['selectChoice'].length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Text(product['selectChoice'][index]['name']+ ', ');
-                      })),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    height: 30.0,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          iconSize: 18.0,
-                          padding: const EdgeInsets.all(2.0),
-                          icon: Icon(Icons.remove),
-                          onPressed: () {
-                            bloc.removeFromProduct(product);
-                            setState(() {
-                              calculTotal();
-                              tableContent = bloc.allItems;
-                            });
-                          },
-                        ),
-                        Text(
-                          "${product['quantity']}",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                        IconButton(
-                          iconSize: 18.0,
-                          padding: const EdgeInsets.all(2.0),
-                          icon: Icon(Icons.add),
-                          onPressed: () {
-                            bloc.addToCart(product);
-                            setState(() {
-                              calculTotal();
-                              tableContent = bloc.allItems;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )
+          ),
+          leading: product['productPicture'] != null
+              ? Image.network(
+                  baseurl + "public/products/" + product["productPicture"],
+                  fit: BoxFit.cover,
+                  height: 90,
+                  width: 70,
+                )
+              : null,
+          trailing: Container(
+            padding: EdgeInsets.all(0.0),
+            width: 35,
+            alignment: Alignment.center,
+            child: GestureDetector(
+              onTap: () {
+                bloc.deletItem(product);
+                setState(() {
+                  calculTotal();
+                  print('tableccccccccccccccccccccccccccccccc');
+                  print(tableContent);
+                  tableContent = bloc.allItems;
+                });
+              },
+              child: Icon(Icons.close, color: Colors.black, size: 25,),
+            ),
+          ),
         ),
       ),
     );

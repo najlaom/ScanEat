@@ -31,6 +31,7 @@ class _CategoriesState extends State<Categories> {
     await Future.delayed(Duration(seconds: 1));
     _fetchCategories();
   }
+
   var categoryList = [];
   _fetchCategories() async {
     var categories = await CategoryService().getCategories();
@@ -72,34 +73,31 @@ class _CategoriesState extends State<Categories> {
         initialData: bloc.allItems,
         stream: bloc.getStream,
         builder: (context, snapshot) {
-          return  Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              toolbarHeight: 80,
-              backgroundColor: Color(0xFFFF4C29),
-              title: Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Text(
-                  'Table : ' + numTable,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 24.0),
-                  textAlign: TextAlign.start,
+          return Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                toolbarHeight: 80,
+                backgroundColor: Color(0xFFFF4C29),
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                title: Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: Text(
+                    'Table : ' + numTable,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 24.0),
+                    textAlign: TextAlign.start,
+                  ),
                 ),
-              ),
-              elevation: 0,
-              actions: <Widget>[
-                Container(
-                  width: 35,
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.shopping_cart_outlined,
-                            color: Colors.white,
-                          ),
+                actions: <Widget>[
+                  Stack(
+                    children: [
+                      Container(
+                        width: 80,
+                        padding: EdgeInsets.all(20),
+                        child: IconButton(
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -107,134 +105,143 @@ class _CategoriesState extends State<Categories> {
                                   builder: (context) => AddToTable()),
                             );
                           },
-                        ),
-                        bloc.allItems.length > 0
-                            ? Positioned(
-                          right: 15,
-                          top: -3,
-                          child: Container(
-                              decoration: new BoxDecoration(
-                                color: Color(0xFF2C394B),
-                                shape: BoxShape.circle,
-                              ),
-                              padding: EdgeInsets.all(5.0),
-                              child: Text(bloc.allItems.length.toString(),
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white))),
-                        )
-                            : Container(),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            body: Stack(
-              children: [
-                ClipPath(
-                  clipper: WaveClipperTwo(),
-                  child: Container(
-                    decoration: BoxDecoration(color: Color(0xFFFF4C29)),
-                    height: 200,
-                  ),
-                ),
-                RefreshIndicator(
-                  key: refreshKey,
-                  backgroundColor: Colors.white,
-                  color: Color(0xFFFF4C29),
-                  onRefresh: refreshList,
-                  child:CustomScrollView(
-                    physics: BouncingScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Text(
-                            "Choisir une catégorie pour commander des plats en quelques secondes",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16.0),
+                          icon: Icon(
+                            Icons.shopping_cart,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                      SliverPadding(
-                        padding: const EdgeInsets.all(16.0),
-                        sliver: SliverGrid(
-                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 160,
+                      bloc.allItems.length > 0
+                          ? Positioned(
+                              right: 15,
+                              top: 15,
+                              child: Container(
+                                  decoration: new BoxDecoration(
+                                    color: Color(0xFF2C394B),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                      bloc.countItem(categoryList).toString(),
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.white))),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                ],
+              ),
+              body: Stack(
+                children: [
+                  ClipPath(
+                    clipper: WaveClipperTwo(),
+                    child: Container(
+                      decoration: BoxDecoration(color: Color(0xFFFF4C29)),
+                      height: 200,
+                    ),
+                  ),
+                  RefreshIndicator(
+                    key: refreshKey,
+                    backgroundColor: Colors.white,
+                    color: Color(0xFFFF4C29),
+                    onRefresh: refreshList,
+                    child: CustomScrollView(
+                      physics: BouncingScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14.0, vertical: 8.0),
+                            child: Text(
+                              "Choisir une catégorie pour commander des plats en quelques secondes",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16.0),
+                            ),
                           ),
-                          delegate: SliverChildBuilderDelegate(
-                                  (BuildContext context, int index) {
-                                return Container(
+                        ),
+                        SliverPadding(
+                          padding: const EdgeInsets.all(10.0),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 180,
+                            ),
+                            delegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                              return Container(
                                   // padding: EdgeInsets.all(5.0),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => Products(
-                                                categoryList != null &&
-                                                    categoryList[index]['_id'] != null
-                                                    ? categoryList[index]['_id'].toString()
-                                                    : '',
-                                                categoryList != null &&
-                                                    categoryList[index]['name'] != null
-                                                    ? categoryList[index]['name'].toString()
-                                                    : '')));
-                                      },
-                                      child: Card(
-                                        elevation: 1.0,
-                                        child: Column(
-                                          children: [
-                                            categoryList != null &&
-                                                categoryList[index]['categoryImage'] !=
-                                                    null
-                                                ? Container(
+                                  child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => Products(
+                                          categoryList != null &&
+                                                  categoryList[index]['_id'] !=
+                                                      null
+                                              ? categoryList[index]['_id']
+                                                  .toString()
+                                              : '',
+                                          categoryList != null &&
+                                                  categoryList[index]['name'] !=
+                                                      null
+                                              ? categoryList[index]['name']
+                                                  .toString()
+                                              : '')));
+                                },
+                                child: Card(
+                                  elevation: 1.0,
+                                  child: Column(
+                                    children: [
+                                      categoryList != null &&
+                                              categoryList[index]
+                                                      ['categoryImage'] !=
+                                                  null
+                                          ? Container(
                                               padding: EdgeInsets.all(10.0),
                                               width: 130,
-                                              height: 90,
+                                              height: 80,
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(0),
+                                                borderRadius:
+                                                    BorderRadius.circular(0),
                                                 // border: Border.all(),
                                               ),
                                               child: Image.network(
                                                 baseurl +
                                                     "public/categories/" +
                                                     categoryList[index]
-                                                    ["categoryImage"],
+                                                        ["categoryImage"],
                                                 fit: BoxFit.cover,
                                               ),
                                             )
-                                                : Container(),
-                                            SizedBox(
-                                              height: 2.0,
-                                            ),
-                                            Container(
-                                              alignment: Alignment.center,
-                                              // padding: EdgeInsets.all(5.0),
-                                              child: Text(
-                                                categoryList != null &&
-                                                    categoryList[index]['name'] != null
-                                                    ? categoryList[index]["name"]
-                                                    : '',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ],
+                                          : Container(),
+                                      SizedBox(
+                                        height: 2.0,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        // padding: EdgeInsets.all(5.0),
+                                        child: Text(
+                                          categoryList != null &&
+                                                  categoryList[index]['name'] !=
+                                                      null
+                                              ? categoryList[index]["name"]
+                                              : '',
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
-                                    ));
-                              }, childCount: categoryList.length),
+                                    ],
+                                  ),
+                                ),
+                              ));
+                            }, childCount: categoryList.length),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-
-              ],
-            )
-          );
+                ],
+              ));
         });
   }
 }

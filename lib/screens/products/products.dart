@@ -129,6 +129,22 @@ class _ProductsState extends State<Products> {
                                                     : ''),
                                           ),
                                         );
+                                        // showModalBottomSheet(
+                                        //
+                                        // isDismissible: true,
+                                        //
+                                        // context: context,
+                                        // builder: (context) {
+                                        //   return Scaffold(
+                                        //     appBar: AppBar(
+                                        //       title: Text('ffffffff'),
+                                        //     ),
+                                        //     body: Container(
+                                        //        height: MediaQuery.of(context).size.height,
+                                        //     ),
+                                        //   );
+                                        // });
+
                                       },
                                       child: Card(
                                         elevation: 2.0,
@@ -141,8 +157,9 @@ class _ProductsState extends State<Products> {
                                                         null
                                                 ? Container(
                                                     width: 160,
-                                                    height: 120,
-                                                    padding: EdgeInsets.only(top: 7.0),
+                                                    height: 100,
+                                                    padding: EdgeInsets.only(
+                                                        top: 7.0),
                                                     decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -193,19 +210,12 @@ class _ProductsState extends State<Products> {
                                       ),
                                     ),
                                   ),
-                                  (bloc
-                                              .getQuantityItemFromCart(
-                                                  productList[index]['_id'])
-                                              .toString()
-                                              .length >
-                                          0)
+                                  (bloc.getQuantityItemFromCart(productList,productList[index]['_id']).toString().length > 0
+                                  && bloc.getQuantityItemFromCart(productList,productList[index]['_id']) != 0)
                                       ? Positioned(
                                           right: 15,
-                                          top: -3,
-                                          child: bloc.getQuantityItemFromCart(
-                                                      productList[index]
-                                                          ['_id']) !=
-                                                  null
+                                          top: 6,
+                                          child: bloc.getQuantityItemFromCart(productList,productList[index]['_id']) != null
                                               ? Container(
                                                   decoration: new BoxDecoration(
                                                     color:
@@ -213,12 +223,7 @@ class _ProductsState extends State<Products> {
                                                     shape: BoxShape.circle,
                                                   ),
                                                   padding: EdgeInsets.all(5.0),
-                                                  child: Text(
-                                                      bloc
-                                                          .getQuantityItemFromCart(
-                                                              productList[index]
-                                                                  ['_id'])
-                                                          .toString(),
+                                                  child: Text(bloc.getQuantityItemFromCart(productList,productList[index]['_id']).toString(),
                                                       style: TextStyle(
                                                           fontSize: 14,
                                                           color: Colors.white)))
@@ -234,67 +239,69 @@ class _ProductsState extends State<Products> {
                     ),
                   ),
                   Positioned(
-                    bottom: 5.0,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 70.0,
-                      child: (bloc.allItems.length) >= 1
-                          ? Card(
-                        elevation: 4.0,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddToTable()),
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                            //alignment: Alignment.center,
-                            color: Colors.green,
-                            //padding: EdgeInsets.all(1.0),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    (bloc.allItems.length) == 1
-                                        ? '${bloc.allItems.length.toString()} Produit'
-                                        : '${bloc.allItems.length.toString()} Produits',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                        height: 1,
-                                        fontSize: 14,
-                                        fontFamily: 'JosefinSans')),
-                                Text('Voir Commande',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white70,
-                                        fontWeight: FontWeight.w400,
-                                        height: 1.5,
-                                        fontSize: 18,
-                                        fontFamily: 'JosefinSans')),
-                                Text(
-                                  '${bloc.getTotalItemFromCart()} DT',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      height: 1,
-                                      fontSize: 14,
-                                      fontFamily: 'JosefinSans'),
+                      bottom: 5.0,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 70.0,
+                        child: (bloc.allItems != null &&
+                                (bloc.allItems.length) >= 1)
+                            ? Card(
+                                elevation: 4.0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => AddToTable()),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        left: 10.0, right: 10.0),
+                                    //alignment: Alignment.center,
+                                    color: Color(0xFF00C092),
+                                    //padding: EdgeInsets.all(1.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            (bloc.allItems != null &&
+                                                    (bloc.allItems.length) == 1)
+                                                ? '${bloc.countItem(productList).toString()} Produit'
+                                                : '${bloc.countItem(productList).toString()} Produits',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1,
+                                                fontSize: 14,
+                                                fontFamily: 'JosefinSans')),
+                                        Text('Voir Commande',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                                height: 1.5,
+                                                fontSize: 20,
+                                                fontFamily: 'JosefinSans')),
+                                        Text(
+                                          '${bloc.getTotalItemFromCart()} DT',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400,
+                                              height: 1,
+                                              fontSize: 14,
+                                              fontFamily: 'JosefinSans'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                          : Card(),
-                    )
-                  ),
+                              )
+                            : Card(),
+                      )),
                 ],
               ));
         });

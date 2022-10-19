@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:collection/collection.dart';
 
 final bloc = CartItemsBloc();
 
 class CartItemsBloc {
   final cartStreamController = StreamController.broadcast();
+
+  Function eq = const ListEquality().equals;
 
   /// The [getStream] getter would be used to expose our stream to other classes
   Stream get getStream => cartStreamController.stream;
@@ -49,7 +53,114 @@ class CartItemsBloc {
     cartStreamController.sink.add(allItems);
     _saveCart();
   }
+
+  getTotalItemFromCart() {
+    double tmp = 0;
+    print('allItemsssssss');
+    if (allItems != null) {
+      allItems.forEach((prdt) {
+        tmp += prdt["quantity"] * prdt["price"];
+      });
+      return tmp;
+    } else {
+      print('vidddddddddddddddddddddddddddddddddddd');
+    }
+  }
+
+  countItem(array) {
+    array = allItems;
+    if (array == null) {
+      return 0;
+    } else {
+      int count = 0;
+      for (var i = 0; i < array.length; i++) {
+        count += int.parse(array[i]["quantity"].toString());
+      }
+      return count;
+    }
+  }
+
+  getQuantityItemFromCart(array, idPrd) {
+    array = allItems;
+    if (array == null) {
+      return 0;
+    } else {
+      int count = 0;
+      for (var i = 0; i < array.length; i++) {
+        if (array[i] != null && array[i]["_id"] == idPrd) {
+          count += int.parse(array[i]["quantity"].toString());
+          print('allItems.lengthcoooooooooooooooooooooooo');
+          print(allItems);
+          print(allItems.length);
+          print('araaaaaaaaaaaaaaaaaaaaaaaay');
+          print(array.length);
+          print(count);
+          print(count);
+        }
+      }
+      print('allItems.lengthcoooooooooooooooooooooooo');
+      print(allItems.length);
+      return count;
+    }
+  }
+
   Future<void> addToCart(item) async {
+    print("najla");
+    print(item);
+    bool found = false;
+    if (item.length > 0) {
+      print('fffffffffffffffff');
+      print(item);
+      if (item['selectChoice'].length == 0) {
+        print('viddddddddddddddddddddddddd');
+        print(item['selectChoice']);
+        for (var i = 0; i < allItems.length; i++) {
+          if (allItems[i] != null && allItems[i]["_id"] == item["_id"] && allItems[i]["selectChoice"].length == 0) {
+            found = true;
+            print('allItems[i]["quantity"]vvvvvvvvvvvvvvvvvvvvvvvvv');
+            print(allItems[i]["quantity"]);
+            allItems[i]["quantity"] += item["quantity"];
+          }
+        }
+      } else {
+        print('nnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
+        print(item['selectChoice']);
+        for (var i = 0; i < allItems.length; i++) {
+          // for(var j = 0; j < allItems[i]['selectChoice'].length; j++){
+          //   print("allItems[i]['selectChoice'][j]['_id']");
+          //   print(allItems[i]['selectChoice'][j]["_id"]);
+          //   if(allItems[i]['selectChoice'][j]["_id"] == item['selectChoice'][j]["_id"]){
+          //     found = true;
+          //     j ++;
+          //     allItems[i]["quantity"]++;
+          //   }
+          // }
+          if (allItems[i]['selectChoice'].length > 0 && compareTwoArray(allItems[i]['selectChoice'], item["selectChoice"]) == true) {
+            found = true;
+            print('ddddddddddddddddddddddddddddddajjjjjjjjjjjjjjjjjjjjjj');
+            allItems[i]["quantity"] += item["quantity"];
+          }
+        }
+      }
+    }
+    if (!found) allItems.add(item);
+
+    _saveCart();
+    cartStreamController.sink.add(allItems);
+  }
+
+  bool compareTwoArray(array1, array2) {
+    var list = [];
+    for (var item in array1) {
+      list = array2
+          .where((choiceItem) => choiceItem["_id"] == item["_id"])
+          .toList();
+      if (list.length == 0) return false;
+    }
+    return true;
+  }
+
+  Future<void> addOneItem(item) async {
     print("item bloc");
     print(item);
     bool found = false;
@@ -62,81 +173,37 @@ class CartItemsBloc {
         }
       }
     }
+    _saveCart();
+    cartStreamController.sink.add(allItems);
+  }
+
+  Future<void> addToCartOption(item) async {
+    print("item bloc");
+    print(item);
+
+    // print('selectItem');
+    // print(selectItem);
+    bool found = false;
+    if (allItems.length > 0) {
+      for (var i = 0; i < allItems.length; i++) {
+        if (allItems[i] != null && allItems[i]["_id"] == item["_id"]) {
+          found = true;
+          await allItems[i]["quantity"]++;
+          print("produiiiiiiiiiiiiiiiiiiiiiiiiiit ajouté");
+        }
+      }
+    }
     if (!found) allItems.add(item);
-    print("tttemhhhhhhhhhhhhhhh");
+    print("item");
     print(item);
     for (var i = 0; i < allItems.length; i++) {
       print('allItems.toString()');
+      // print(allItems[i]['sub_product'][i]['sub_name']);
       print(allItems[i]['name'].toString());
-      print("najllllllllllllldddddddddddd");
-      print(allItems[i]['selectChoice']);
     }
 
     _saveCart();
     cartStreamController.sink.add(allItems);
-  }
-  // Future<void> addToCartOption(item) async {
-  //   print("item bloc");
-  //   print(item);
-  //
-  //   // print('selectItem');
-  //   // print(selectItem);
-  //   bool found = false;
-  //   if (allItems.length > 0) {
-  //     for (var i = 0; i < allItems.length; i++) {
-  //       if (allItems[i] != null && allItems[i]["_id"] == item["_id"]) {
-  //         found = true;
-  //         await allItems[i]["quantity"]++;
-  //         print("produiiiiiiiiiiiiiiiiiiiiiiiiiit ajouté");
-  //       }
-  //     }
-  //   }
-  //   if (!found) allItems.add(item);
-  //   print("item");
-  //   print(item);
-  //   for (var i = 0; i < allItems.length; i++) {
-  //     print('allItems.toString()');
-  //     // print(allItems[i]['sub_product'][i]['sub_name']);
-  //     print(allItems[i]['name'].toString());
-  //   }
-  //
-  //   _saveCart();
-  //   cartStreamController.sink.add(allItems);
-  // }
-
-  getTotalItemFromCart(){
-    double tmp = 0;
-    print('allItemsssssss');
-    if(allItems!= null)allItems.forEach((prdt) {
-      tmp += prdt["quantity"] * prdt["price"];
-    });
-      return tmp;
-  }
-  getQuantityItemFromCart(idPrd) {
-    print('allItemsss');
-    print(allItems);
-    // List quntitiesItem = allItems.where((item) => item["_id"] == idPrd).toList();
-    for (var i = 0; i < allItems.length; i++) {
-      if (allItems[i] != null && allItems[i]["_id"] == idPrd) {
-        print('idPrd');
-        print(idPrd);
-        print('allItems[i]quantity');
-        print(allItems[i]['quantity']);
-        var quantitiesItem = allItems[i]['quantity'];
-        print('quantitiesItem');
-        print('price');
-        print(allItems[i]['price']);
-        print(quantitiesItem);
-        return quantitiesItem;
-
-      }
-    }
-    // print('quntitiesItem');
-    // print(quntitiesItem);
-    // print("idprd");
-    // print(idPrd);
-    // print(quntitiesItem.length);
-    // return quntitiesItem.length;
   }
 
   void clearItem(item) {

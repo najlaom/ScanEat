@@ -3,7 +3,6 @@ export 'package:scaneat/screens/categories/categories.dart';
 export 'package:scaneat/screens/products/products.dart';
 export 'package:scaneat/screens/products/detaills.dart';
 export 'package:scaneat/screens/tables/add_to_table.dart';
-export 'package:scaneat/screens/orders/ordersByClient.dart';
 export 'package:scaneat/screens/livraison/home_screen.dart';
 export 'package:scaneat/screens/livraison/intro_screen.dart';
 export 'package:scaneat/screens/livraison/home_caffe.dart';
